@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+function base62_encode {
+  readonly BASE62=($(echo {0..9} {a..z} {A..Z}))
+  local out=
+  for i in $(bc <<< "obase=62; $1"); do
+      out="${out}${BASE62[$((10#$i))]}"
+  done
+  echo $out
+}
+
+url="$1"
+read -s -p "pass: " pass
+echo
+
+hex=$(echo -n "${url}${pass}" | sha256sum | tr [a-f] [A-F])
+hex=${hex%% *}
+#echo "hex=$hex"
+
+num=$(dc -e "16i $hex p")
+num=${num:0:32}
+#echo "num=$num"
+
+pass=$(base62_encode $num)
+echo "pass: $pass"
