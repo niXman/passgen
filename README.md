@@ -2,7 +2,7 @@
 Password generator uses common `passphrase` and site `URL`.
 
 # Example
-Generate password for gmail account `myuser@gmail.com`:
+Generate password for `myuser@gmail.com` account:
 ```
 passgen myuser@gmail.com
 pass: ### enter passphrase
