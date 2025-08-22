@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+which bc >>/dev/null 2>&1 || { echo "no \"bc\" executable installed!"; exit 1; }
+which dc >>/dev/null 2>&1 || { echo "no \"dc\" executable installed!"; exit 1; }
+which sha256sum >>/dev/null 2>&1 || { echo "no \"sha256sum\" executable installed!"; exit 1; }
+
 function base62_encode {
   readonly BASE62=($(echo {0..9} {a..z} {A..Z}))
   local out=
@@ -13,7 +17,10 @@ url="$1"
 read -s -p "pass: " pass
 echo
 
-hex=$(echo -n "${url}${pass}" | sha256sum | tr [a-f] [A-F])
+hex=$(echo -n "${url}${pass}" | sha256sum)
+#echo "hex=$hex"
+hex=$(echo -n "${hex^^}")
+#echo "hex=$hex"
 hex=${hex%% *}
 #echo "hex=$hex"
 
