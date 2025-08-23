@@ -1,19 +1,32 @@
 #!/usr/bin/env bash
 
+set -f
+
 which bc >>/dev/null 2>&1 || { echo "no \"bc\" executable installed!"; exit 1; }
 which dc >>/dev/null 2>&1 || { echo "no \"dc\" executable installed!"; exit 1; }
 which sha256sum >>/dev/null 2>&1 || { echo "no \"sha256sum\" executable installed!"; exit 1; }
 
-function base62_encode {
-  readonly BASE62=($(echo {0..9} {a..z} {A..Z}))
+function encode {
+  readonly DICT=('o' 'R' '7' '5' 'a' 'z' 'V' 'e' 'k' 'D' '3' '2' '+' 'I' '^'\
+'1' '4' 's' 'L' 'l' '*' 'y' 'O' 'u' 'Z' 'f' '9' 'r' 'P' 'J' 'Y' 'K' 'c' 'g'\
+'T' 'v' 'U' 'd' '!' 'i' '8' 'n' 'Q' '&' 'h' '?' 'H' 't' 'B' '-' '/' '0' 'b'\
+'x' 'N' 'F' 'X' '#' '6' '%' 'G' 'M' 'q' 'm' 'j' '$' 'A' 'w' 'p' 'E' '@' 'W' 'C' 'S')
+  #echo "dictlen=${#DICT[@]}"
+  #echo "dict=(${DICT[@]})"
   local out=
   for i in $(bc <<< "obase=62; $1"); do
-      out="${out}${BASE62[$((10#$i))]}"
+    idx=$((10#$i));
+    [[ $idx -ge ${#DICT[@]} ]] && {
+      echo "index for dictionar is out of range($idx). terminate."
+      exit 1
+    }
+    out="${out}${DICT[idx]}"
   done
   echo $out
 }
 
 url="$1"
+#echo "URL=$url"
 read -s -p "pass: " pass
 echo
 
@@ -28,5 +41,5 @@ num=$(dc -e "16i $hex p")
 num=${num:0:32}
 #echo "num=$num"
 
-pass=$(base62_encode $num)
+pass=$(encode $num)
 echo "pass: $pass"
